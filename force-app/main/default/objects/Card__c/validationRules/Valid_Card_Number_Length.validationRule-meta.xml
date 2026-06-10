@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Valid_Card_Number_Length</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    NOT(ISBLANK(Card_Number__c)),
+    OR(
+        LEN(Card_Number__c) &lt; 13,
+        LEN(Card_Number__c) &gt; 19
+    )
+)</errorConditionFormula>
+    <errorMessage>Card number must be between 13 and 19 digits</errorMessage>
+</ValidationRule>

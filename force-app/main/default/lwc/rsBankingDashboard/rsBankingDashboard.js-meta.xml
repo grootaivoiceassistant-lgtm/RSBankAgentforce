@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>RS Banking Portal</masterLabel>
+    <description>A complete LWC for RS Banking Corporation community site.</description>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default, lightning__AppPage">
+            <property name="customerName"
+                      type="String"
+                      label="Customer Name"
+                      default="Valued Customer"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

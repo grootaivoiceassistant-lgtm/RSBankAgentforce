@@ -1,0 +1,102 @@
+/* rsBankingDashboard.css */
+:host {
+    --gradient-bg: linear-gradient(135deg, #2e7d32 0%, #a5d6a7 100%);
+    --card-bg: rgba(255, 255, 255, 0.9);
+}
+
+.dashboard-card {
+    background: var(--gradient-bg);
+    color: #fff;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    animation: fadeIn 1s ease-in;
+}
+
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(0,0,0,0.2);
+    border-radius: 0.5rem;
+}
+
+.logo {
+    height: 60px;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.1);
+}
+
+.clock {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.hero-section {
+    text-align: center;
+    padding: 2rem;
+    background: var(--card-bg);
+    color: #2e7d32;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    animation: slideIn 1s ease-out;
+}
+
+.tip-rotator {
+    margin-top: 1rem;
+    font-style: italic;
+}
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--card-bg);
+    border-radius: 0.5rem;
+}
+
+.action-btn {
+    background: #2e7d32;
+    color: white;
+    transition: background 0.3s;
+}
+
+.action-btn:hover {
+    background: #1b5e20;
+}
+
+.services-showcase, .loan-calculator, .chat-section {
+    padding: 1rem;
+    background: var(--card-bg);
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+}
+
+.slds-modal__container {
+    background: var(--gradient-bg);
+    color: #fff;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@media (max-width: 768px) {
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+    .logo {
+        height: 40px;
+    }
+}

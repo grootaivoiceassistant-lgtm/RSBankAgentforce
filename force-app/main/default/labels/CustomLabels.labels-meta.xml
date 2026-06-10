@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>Product_Out_Of_Stock</fullName>
+        <categories>For organization</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>related to product Availability</shortDescription>
+        <value>Sorry, this product is currently out of stock</value>
+    </labels>
+    <labels>
+        <fullName>Welcome_Message</fullName>
+        <categories>For organization</categories>
+        <language>en_US</language>
+        <protected>true</protected>
+        <shortDescription>This label is used for welcome purpose</shortDescription>
+        <value>Default text</value>
+    </labels>
+</CustomLabels>

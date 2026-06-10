@@ -1,0 +1,91 @@
+<apex:page showHeader="false" applyHtmlTag="false" standardStylesheets="false">
+    <apex:includeLightning />
+    <apex:slds />
+
+    <div id="lightning"></div>
+
+    <script>
+    (function(){
+        // Helper: show a small fallback toast when $A is not available (standalone VF)
+        function showClassicToast(message, type) {
+            var toastDiv = document.createElement('div');
+            toastDiv.style.position = 'fixed';
+            toastDiv.style.bottom = '20px';
+            toastDiv.style.right = '20px';
+            toastDiv.style.background = type === 'error' ? '#c0392b' : '#2c82c9';
+            toastDiv.style.color = '#fff';
+            toastDiv.style.padding = '10px 14px';
+            toastDiv.style.borderRadius = '6px';
+            toastDiv.style.boxShadow = '0 2px 6px rgba(0,0,0,0.25)';
+            toastDiv.innerText = message;
+            document.body.appendChild(toastDiv);
+            setTimeout(function(){ toastDiv.remove(); }, 4000);
+        }
+
+        var isLightning = (typeof $A !== 'undefined');
+
+        // Use Lightning Out to create component inside VF (if parameters exist)
+        try {
+            // Adjust namespace/app as appropriate for your org
+            $Lightning.use('c:LeankorDependencyApp', function() {
+                // Create the toast component inside VF (optional)
+                $Lightning.createComponent(
+                    "c:ToastFromVF",
+                    {},
+                    "lightning",
+                    function(createdCmp) {
+                        console.log("Toast component created inside VF via Lightning Out.");
+                        // Hook the internal force:showToast event (fired inside the Lightning runtime loaded into VF)
+                        if (typeof $A !== 'undefined' && $A.eventService) {
+                            $A.eventService.addHandler({
+                                event: 'force:showToast',
+                                handler: function(evt) {
+                                    console.log("VF (Lightning Out) captured force:showToast:", evt.getParams());
+                                    var message = {
+                                        type: 'EventFromVF',
+                                        message: evt.getParams().message || ''
+                                    };
+                                    // Determine parent origin safely; ancestorOrigins might be present
+                                    var lexOrigin = '*';
+                                    if (window.location.ancestorOrigins && window.location.ancestorOrigins.length > 0) {
+                                        lexOrigin = window.location.ancestorOrigins[window.location.ancestorOrigins.length - 1];
+                                    }
+                                    // Send to parent window (the Lightning shell) so the shell shows the toast
+                                    try {
+                                        window.parent.postMessage(message, lexOrigin);
+                                        console.log("VF -> parent postMessage sent to", lexOrigin, message);
+                                    } catch (err) {
+                                        console.error("postMessage failed:", err);
+                                    }
+                                }
+                            });
+                        } else {
+                            console.log("Running Lightning Out but $A.eventService not available.");
+                        }
+                    }
+                );
+            }, function(err){
+                console.warn("Lightning.use error:", err);
+            });
+        } catch (e) {
+            console.warn("Lightning Out not available; page running as standalone VF:", e);
+            showClassicToast("Lightning Out not available — showing local toast", "info");
+        }
+
+        // Also expose a simple function so you can send test messages from VF console:
+        window.testSendToParent = function(msg) {
+            var m = { type: 'EventFromVF', message: msg };
+            try {
+                var lexOrigin = '*';
+                if (window.location.ancestorOrigins && window.location.ancestorOrigins.length > 0) {
+                    lexOrigin = window.location.ancestorOrigins[window.location.ancestorOrigins.length - 1];
+                }
+                window.parent.postMessage(m, lexOrigin);
+                console.log("testSendToParent sent", m, "to", lexOrigin);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+    })();
+    </script>
+</apex:page>

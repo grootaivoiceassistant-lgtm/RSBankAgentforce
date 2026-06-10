@@ -1,0 +1,466 @@
+<template>
+    <!-- Welcome Card -->
+    <lightning-card title="RS Banking Dashboard" class="welcome-card">
+        <div class="slds-p-around_medium">
+            <div class="welcome-header">
+                <lightning-icon icon-name="utility:user" size="medium" class="welcome-icon"></lightning-icon>
+                <h1 class="slds-text-heading_medium welcome-title">
+                    Welcome, {loggedInUserName} 👋
+                </h1>
+            </div>
+            <p class="slds-m-top_small welcome-text">
+                Your personalized RS Banking Portal. Manage your accounts, explore services, and connect with our AI-powered Agentforce for seamless banking.
+            </p>
+            <p class="branch-info">
+                <strong>Branch:</strong> {selectedBranchName}
+            </p>
+            <p class="branch-info">
+                <strong>IFSC:</strong> {selectedBranchIFSCCode}
+            </p>
+            <!-- Account Details Section -->
+            <template if:true={bankAccount}>
+                <h3 class="slds-text-heading_small">Your Account Details</h3>
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-m-top_small">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col">Field</th>
+                            <th scope="col">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Account Number</td>
+                            <td>{bankAccount.Account_Number__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Account Type</td>
+                            <td>{bankAccount.Account_Type__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Balance</td>
+                            <td>₹{bankAccount.Balance__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Status</td>
+                            <td>{bankAccount.Account_Status__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Opening Date</td>
+                            <td>{bankAccount.Opening_Date__c}</td>
+                        </tr>
+                        <tr>
+                            <td>Nominee</td>
+                            <td>{bankAccount.Nominee__c}</td>
+                        </tr>
+                        <tr>
+                            <td>PAN Card</td>
+                            <td>{bankAccount.PAN_Card_Number__c}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </template>
+            <template if:true={bankAccountError}>
+                <p class="slds-text-color_error">Error loading account details: {bankAccountError}</p>
+            </template>
+        </div>
+    </lightning-card>
+
+    <!-- Main Dashboard -->
+    <lightning-card title="RS Banking Dashboard" class="dashboard-card">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-left">
+                <img src="data:image/png;base64,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" alt="RS Banking Logo" class="logo" />
+            </div>
+            <div class="header-right">
+                <lightning-button-menu alternative-text="User Menu" icon-name="utility:user" variant="bare">
+                    <lightning-menu-item value="profile" label="Profile" icon-name="utility:identity"></lightning-menu-item>
+                    <lightning-menu-item value="settings" label="Settings" icon-name="utility:settings"></lightning-menu-item>
+                    <lightning-menu-item value="logout" label="Logout" icon-name="utility:logout"></lightning-menu-item>
+                </lightning-button-menu>
+                <div class="clock" aria-live="polite">{currentTimeIST}</div>
+            </div>
+        </div>
+
+        <!-- Hero Section with Carousel -->
+        <div class="hero-section">
+            <h2 class="hero-title">Your Financial Journey Starts Here</h2>
+            <div class="tip-carousel" aria-label="Financial Tips Carousel">
+                <lightning-button icon-name="utility:chevronleft" variant="bare" onclick={prevTip} aria-label="Previous Tip"></lightning-button>
+                <div class="tip-rotator" aria-live="polite">
+                    <p class="tip">{currentTip}</p>
+                </div>
+                <lightning-button icon-name="utility:chevronright" variant="bare" onclick={nextTip} aria-label="Next Tip"></lightning-button>
+            </div>
+        </div>
+
+        <!-- Quick Banking Actions -->
+        <div class="quick-actions">
+            <lightning-button label="Check Balance" icon-name="utility:currency" variant="brand" onclick={handleCheckBalance} class="action-btn"></lightning-button>
+            <lightning-button label="Transfer Funds" icon-name="utility:forward" variant="brand" onclick={handleTransferFunds} class="action-btn"></lightning-button>
+            <lightning-button label="Pay Bills" icon-name="utility:payment_gateway" variant="brand" onclick={handlePayBills} class="action-btn"></lightning-button>
+            <lightning-button label="Open Account" icon-name="utility:add" variant="brand" onclick={handleOpenAccount} class="action-btn"></lightning-button>
+            <lightning-button label="Loan Application" icon-name="utility:contract" variant="brand" onclick={handleLoanApplication} class="action-btn"></lightning-button>
+            <lightning-button label="Invest Now" icon-name="utility:chart" variant="brand" onclick={handleInvestNow} class="action-btn"></lightning-button>
+        </div>
+
+        <!-- Banking Services Showcase -->
+        <div class="services-showcase">
+            <h3><lightning-card title="Our Services" icon-name="utility:apps" alternative-text="Our Services"></lightning-card></h3>
+            
+            <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">
+                    <lightning-card title="Savings Account" icon-name="standard:account">
+                        <div class="slds-p-around_small">
+                            <p>Interest Rate: 4.5% APY | Ideal for savings growth.</p>
+                            <lightning-button label="Learn More" onclick={openServiceModal} data-service="Savings Account"></lightning-button>
+                        </div>
+                    </lightning-card>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">
+                    <lightning-card title="Current Account" icon-name="standard:client">
+                        <div class="slds-p-around_small">
+                            <p>Designed for business flexibility.</p>
+                            <lightning-button label="Learn More" onclick={openServiceModal} data-service="Current Account"></lightning-button>
+                        </div>
+                    </lightning-card>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">
+                    <lightning-card title="Fixed Deposits" icon-name="standard:investment_account">
+                        <div class="slds-p-around_small">
+                            <p>Interest Rate: 6.8% APY | Secure long-term investment.</p>
+                            <lightning-button label="Learn More" onclick={openServiceModal} data-service="Fixed Deposits"></lightning-button>
+                        </div>
+                    </lightning-card>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">
+                    <lightning-card title="Personal Loans" icon-name="utility:moneybag">
+                        <div class="slds-p-around_small">
+                            <p>Starting at 8.5% | Flexible repayment options.</p>
+                            <lightning-button label="Learn More" onclick={openServiceModal} data-service="Personal Loans"></lightning-button>
+                        </div>
+                    </lightning-card>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">
+                    <lightning-card title="Home Loans" icon-name="standard:home">
+                        <div class="slds-p-around_small">
+                            <p>Starting at 7.2% | Home ownership made easy.</p>
+                            <lightning-button label="Learn More" onclick={openServiceModal} data-service="Home Loans"></lightning-button>
+                        </div>
+                    </lightning-card>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3">
+                    <lightning-card title="Investment Services" icon-name="standard:wealth_management">
+                        <div class="slds-p-around_small">
+                            <p>Diversify with expert guidance.</p>
+                            <lightning-button label="Learn More" onclick={openServiceModal} data-service="Investment Services"></lightning-button>
+                        </div>
+                    </lightning-card>
+                </div>
+            <div class="slds-col slds-size_1-of-1">
+    <lightning-card title="Account Summary" icon-name="standard:account">
+        <div class="slds-p-around_small">
+            <template if:true={bankAccounts}>
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col">Account Number</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Balance (₹)</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={bankAccounts} for:item="account">
+                            <tr key={account.accountNumber}>
+                                <td>{account.accountNumber}</td>
+                                <td>{account.accountType}</td>
+                                <td>{account.balance}</td>
+                                <td>{account.status}</td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </template>
+            <template if:false={bankAccounts}>
+                <p>No account details available.</p>
+            </template>
+        </div>
+    </lightning-card>
+</div>
+<div class="slds-col slds-size_1-of-1">
+    <lightning-card title="Recent Transactions" icon-name="standard:orders">
+        <div class="slds-p-around_small">
+            <template if:true={transactions}>
+                <lightning-datatable
+                    key-field="transactionId"
+                    data={transactions}
+                    columns={transactionColumns}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </template>
+            <template if:false={transactions}>
+                <p>No transactions available.</p>
+            </template>
+        </div>
+    </lightning-card>
+</div>
+<div class="slds-col slds-size_1-of-1">
+    <lightning-card title="Loans" icon-name="standard:loan">
+        <div class="slds-p-around_small">
+            <template if:true={loans}>
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col">Loan Number</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Outstanding (₹)</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={loans} for:item="loan">
+                            <tr key={loan.loanNumber}>
+                                <td>{loan.loanNumber}</td>
+                                <td>{loan.loanType}</td>
+                                <td>{loan.outstandingAmount}</td>
+                                <td>{loan.loanStatus}</td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </template>
+            <template if:false={loans}>
+                <p>No loans available.</p>
+            </template>
+        </div>
+    </lightning-card>
+</div>
+<div class="slds-col slds-size_1-of-1">
+    <lightning-card title="Cards" icon-name="standard:card">
+        <div class="slds-p-around_small">
+            <template if:true={cards}>
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th scope="col">Card Number</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Available Limit (₹)</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={cards} for:item="card">
+                            <tr key={card.cardNumber}>
+                                <td>{card.cardNumber}</td>
+                                <td>{card.cardType}</td>
+                                <td>{card.availableLimit}</td>
+                                <td>{card.cardStatus}</td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </template>
+            <template if:false={cards}>
+                <p>No cards available.</p>
+            </template>
+        </div>
+    </lightning-card>
+</div>
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-card title="Loans & Credit" icon-name="standard:opportunity">
+                        <div class="slds-p-around_small">
+                            <lightning-card title="Personal Loan">
+                                <p slot="footer">Outstanding: ₹{loanBalance} | Interest Rate: 4.5%</p>
+                                <lightning-button slot="actions" label="Pay Now" onclick={handlePayLoan}></lightning-button>
+                            </lightning-card>
+                            <lightning-card title="Credit Card">
+                                <p slot="footer">Available Credit: ₹{creditAvailable}</p>
+                                <lightning-button slot="actions" label="View Statement" onclick={handleViewStatement}></lightning-button>
+                            </lightning-card>
+                        </div>
+                    </lightning-card>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loan Calculator -->
+        <div class="loan-calculator">
+            <h3 class="slds-text-heading_small">Loan Calculator</h3>
+            <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <lightning-input type="number" label="Loan Amount (₹)" value={loanAmount} min="10000" max="10000000" step="1000" onchange={handleLoanAmountChange}></lightning-input>
+                    <lightning-slider label="Loan Amount Slider" value={loanAmount} min="10000" max="10000000" step="1000" onchange={handleLoanAmountChange}></lightning-slider>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <lightning-input type="number" label="Interest Rate (%)" value={loanInterestRate} min="1" max="20" step="0.1" onchange={handleLoanInterestRateChange}></lightning-input>
+                    <lightning-input type="number" label="Loan Term (Years)" value={loanTerm} min="1" max="30" step="1" onchange={handleLoanTermChange}></lightning-input>
+                    <lightning-progress-bar value={loanTermProgress} size="large"></lightning-progress-bar>
+                </div>
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-button label="Calculate Payment" variant="brand" onclick={calculateLoanPayment}></lightning-button>
+                    <p class="slds-m-top_small">Monthly Payment: ₹{formattedMonthlyPayment}</p>
+                    <lightning-button label="Share with Agentforce" variant="neutral" onclick={shareWithAgent}></lightning-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat with RS Assistant -->
+        <div class="chat-section">
+            <h3 class="slds-text-heading_small">Chat with Agentforce</h3>
+            <div class="chat-bubble">
+                <lightning-button label="Start Chat" variant="brand" icon-name="utility:chat" onclick={openChatModal}></lightning-button>
+            </div>
+            <template if:true={showChatHistory}>
+                <lightning-accordion allow-multiple-sections-open>
+                    <lightning-accordion-section name="chatHistory" label="Chat History">
+                        <template for:each={chatHistory} for:item="chat">
+                            <div key={chat.id} class="slds-m-bottom_small">
+                                <p><strong>You:</strong> {chat.query}</p>
+                                <p><strong>Agentforce:</strong> {chat.response}</p>
+                            </div>
+                        </template>
+                    </lightning-accordion-section>
+                </lightning-accordion>
+            </template>
+            <lightning-textarea
+                name="query"
+                value={agentQuery}
+                label="Ask Agentforce"
+                placeholder="Type your question here..."
+                onchange={handleQueryChange}>
+            </lightning-textarea>
+            <lightning-button label="Send to Agentforce" variant="brand" onclick={handleSendToAgent}></lightning-button>
+            <template if:true={agentResponse}>
+                <div class="slds-m-top_medium slds-box slds-theme_shade">
+                    <p><strong>Agentforce Response:</strong> {agentResponse}</p>
+                </div>
+            </template>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer-section">
+            <h3 class="slds-text-heading_small footer-title">Connect With Us</h3>
+            <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <lightning-card title="Branch Info" icon-name="utility:location" class="contact-card">
+                        <div class="slds-p-around_small">
+                            <p class="branch-info">{selectedBranchName}</p>
+                            <lightning-button label="View Details" variant="brand" onclick={openBranchModal}></lightning-button>
+                        </div>
+                    </lightning-card>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-card title="Contact Us" icon-name="standard:contact" class="contact-card">
+                                <div class="slds-p-around_small">
+                                    <p><strong>📞:</strong> <a href="tel:8827613672">8827613672</a></p>
+                                    <lightning-button label="Call Now" variant="brand" onclick={handleCallClick}></lightning-button>
+                                </div>
+                            </lightning-card>
+                        </div>
+                        <div class="slds-col slds-size_1-of-2">
+                            <lightning-card title="Email Us" icon-name="utility:email" class="contact-card">
+                                <div class="slds-p-around_small">
+                                    <p><strong>📧:</strong> <a href="mailto:support@rsbank.com">support@rsbank.com</a></p>
+                                    <lightning-button label="Send Email" variant="brand" onclick={handleEmailClick}></lightning-button>
+                                </div>
+                            </lightning-card>
+                        </div>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-card title="Visit Us" icon-name="utility:link" class="contact-card">
+                        <div class="slds-p-around_small">
+                            <p><strong>🌐:</strong> <a href="https://www.rsbank.com" target="_blank">www.rsbank.com</a></p>
+                            <lightning-button label="Visit Website" variant="brand" onclick={handleWebsiteClick}></lightning-button>
+                        </div>
+                    </lightning-card>
+                </div>
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-card title="Branch Location" icon-name="standard:address" class="contact-card">
+                        <div class="slds-p-around_small">
+                            <p>{selectedBranchName}</p>
+                            <lightning-button label="View on Map" variant="brand" onclick={handleViewMap}></lightning-button>
+                        </div>
+                    </lightning-card>
+                </div>
+            </div>
+            <p class="copyright">© 2025 RS Banking Corporation. All rights reserved.</p>
+        </footer>
+
+        <!-- Service Information Modal -->
+        <template if:true={showModal}>
+            <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open" data-modal-type="default">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={closeModal}>
+                            <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                        </button>
+                        <h2 class="slds-modal__title">{modalTitle}</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <p>{modalContent}</p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button variant="neutral" label="Close" onclick={closeModal}></lightning-button>
+                    </footer>
+                </div>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </section>
+        </template>
+
+        <!-- Chat Modal -->
+        <template if:true={showChatModal}>
+            <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open" data-modal-type="chat">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={closeChatModal}>
+                            <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                        </button>
+                        <h2 class="slds-modal__title">Chat with RS Assistant</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning-textarea name="chatQuery" value={chatQuery} label="Your Question" onchange={handleChatQueryChange}></lightning-textarea>
+                        <lightning-button label="Send" variant="brand" onclick={sendToAgent}></lightning-button>
+                        <template if:true={agentResponse}>
+                            <div class="slds-m-top_medium slds-box">
+                                <p><strong>Response:</strong> {agentResponse}</p>
+                            </div>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button variant="neutral" label="Close" onclick={closeChatModal}></lightning-button>
+                    </footer>
+                </div>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </section>
+        </template>
+
+        <!-- Branch Modal -->
+        <template if:true={showBranchModal}>
+            <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open" data-modal-type="branch">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={closeBranchModal}>
+                            <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                        </button>
+                        <h2 class="slds-modal__title">Branch Details</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <p><strong>🏢 Address:</strong> Office No. 333, 3rd Floor, RS Banking Corporation, Orbit Mall, near C21 Mall, Vijaynagar, Indore, Madhya Pradesh - 452010</p>
+                        <p><strong>📞 Contact:</strong> 8827613672</p>
+                        <p><strong>📧 Email:</strong> <a href="mailto:support@rsbank.com">support@rsbank.com</a></p>
+                        <p><strong>🌐 Website:</strong> <a href="https://www.rsbank.com" target="_blank">www.rsbank.com</a></p>
+                        <lightning-button label="View on Map" variant="brand" onclick={handleViewMap}></lightning-button>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button variant="neutral" label="Close" onclick={closeBranchModal}></lightning-button>
+                    </footer>
+                </div>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </section>
+        </template>
+    </lightning-card>
+</template>

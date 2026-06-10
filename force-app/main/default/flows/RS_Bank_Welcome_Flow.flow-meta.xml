@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Set_Welcome_Message</name>
+        <label>Set Welcome Message</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>welcomeMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Welcome to RS Group Bank! 🏦  We&apos;re delighted to assist you today. Our banking services include: • Personal Banking &amp; Savings • Business Banking Solutions   • Loans &amp; Credit Services • Investment Planning • Digital Banking Support  How may I help you with your banking needs today?</stringValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <description>Generates welcome message for RS Group Bank customers</description>
+    <environments>Default</environments>
+    <interviewLabel>RS Bank Welcome Flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>RS Bank Welcome Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Set_Welcome_Message</targetReference>
+        </connector>
+    </start>
+    <status>Draft</status>
+    <variables>
+        <description>Welcome message for RS Bank customers</description>
+        <name>welcomeMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+</Flow>

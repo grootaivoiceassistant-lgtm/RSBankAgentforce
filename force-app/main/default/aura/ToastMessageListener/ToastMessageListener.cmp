@@ -1,0 +1,18 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:appHostable" access="global">
+    <aura:attribute name="toastMessage" type="String" default="" />
+
+    <!-- handle native force:showToast fired inside Lightning -->
+    <aura:handler event="force:showToast" action="{!c.handleToastEvent}" />
+
+    <!-- init to attach window message listener for VF postMessage forwarding -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <lightning:card title="Toast Message Listener">
+        <div class="slds-p-around_medium">
+            <p>Waiting for <code>force:showToast</code> events or messages from Visualforce.</p>
+            <aura:if isTrue="{!v.toastMessage != ''}">
+                <p class="slds-m-top_small"><b>Last Toast:</b> {!v.toastMessage}</p>
+            </aura:if>
+        </div>
+    </lightning:card>
+</aura:component>

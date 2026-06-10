@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Credit_Card_Must_Have_Limit</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+    TEXT(Card_Type__c) = &quot;Credit&quot;,
+    ISNULL(Credit_Limit__c)
+)</errorConditionFormula>
+    <errorDisplayField>Available_Limit__c</errorDisplayField>
+    <errorMessage>&quot;Credit cards must have a credit limit defined&quot;</errorMessage>
+</ValidationRule>

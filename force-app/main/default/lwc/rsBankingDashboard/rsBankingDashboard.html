@@ -1,0 +1,132 @@
+<!-- rsBankingDashboard.html -->
+<template>
+    <!-- Welcome Card -->
+    <lightning-card title="RS Banking Dashboard">
+        <div class="slds-p-around_medium">
+            <h1 class="slds-text-heading_medium">
+                Welcome, {customerName} 👋
+            </h1>
+            <p class="slds-m-top_small">
+                This is your personalized RS Banking Portal. Explore your accounts,
+                transactions, and banking services easily.
+            </p>
+        </div>
+    </lightning-card>
+
+    <!-- Main Dashboard -->
+    <lightning-card title="RS Banking Dashboard" class="dashboard-card">
+        <!-- Logo and Clock -->
+        <div class="header-section">
+            <img src={logoUrl} alt="RS Banking Logo" class="logo" />
+            <div class="clock" aria-live="polite">{currentTimeIST}</div>
+        </div>
+
+        <!-- Hero Section with Rotating Tips -->
+        <div class="hero-section">
+            <h2 class="hero-title">Your Financial Journey Starts Here</h2>
+            <div class="tip-rotator" aria-label="Rotating Financial Tips">
+                <p class="tip">{currentTip}</p>
+            </div>
+        </div>
+
+        <!-- Quick Banking Actions -->
+        <div class="quick-actions">
+            <lightning-button label="Check Balance" onclick={handleCheckBalance} class="action-btn"></lightning-button>
+            <lightning-button label="Transfer Funds" onclick={handleTransferFunds} class="action-btn"></lightning-button>
+            <lightning-button label="Pay Bills" onclick={handlePayBills} class="action-btn"></lightning-button>
+            <lightning-button label="Open Account" onclick={handleOpenAccount} class="action-btn"></lightning-button>
+            <lightning-button label="Loan Application" onclick={handleLoanApplication} class="action-btn"></lightning-button>
+            <lightning-button label="Invest Now" onclick={handleInvestNow} class="action-btn"></lightning-button>
+        </div>
+
+        <!-- Banking Services Showcase -->
+        <div class="services-showcase">
+            <lightning-tabset variant="scoped">
+                <lightning-tab label="Savings Account" title="4.5% APY">
+                    <p>Interest Rate: 4.5% APY | Ideal for savings growth.</p>
+                    <button class="slds-button slds-button_brand" data-service="savings" onclick={openServiceModal}>Learn More</button>
+                </lightning-tab>
+                <lightning-tab label="Current Account" title="Business Friendly">
+                    <p>Designed for business flexibility.</p>
+                    <button class="slds-button slds-button_brand" data-service="current" onclick={openServiceModal}>Learn More</button>
+                </lightning-tab>
+                <lightning-tab label="Fixed Deposits" title="6.8% APY">
+                    <p>Interest Rate: 6.8% APY | Secure long-term investment.</p>
+                    <button class="slds-button slds-button_brand" data-service="fixed" onclick={openServiceModal}>Learn More</button>
+                </lightning-tab>
+                <lightning-tab label="Personal Loans" title="From 8.5%">
+                    <p>Starting at 8.5% | Flexible repayment options.</p>
+                    <button class="slds-button slds-button_brand" data-service="personalLoan" onclick={openServiceModal}>Learn More</button>
+                </lightning-tab>
+                <lightning-tab label="Home Loans" title="From 7.2%">
+                    <p>Starting at 7.2% | Home ownership made easy.</p>
+                    <button class="slds-button slds-button_brand" data-service="homeLoan" onclick={openServiceModal}>Learn More</button>
+                </lightning-tab>
+                <lightning-tab label="Investment Services">
+                    <p>Diversify with expert guidance.</p>
+                    <button class="slds-button slds-button_brand" data-service="investment" onclick={openServiceModal}>Learn More</button>
+                </lightning-tab>
+            </lightning-tabset>
+        </div>
+
+        <!-- Interactive Loan Calculator -->
+        <div class="loan-calculator">
+            <lightning-input type="number" label="Loan Amount" value={loanAmount} onchange={handleLoanAmountChange}></lightning-input>
+            <lightning-input type="number" label="Interest Rate (%)" value={loanInterestRate} onchange={handleLoanInterestRateChange}></lightning-input>
+            <lightning-input type="number" label="Loan Term (Years)" value={loanTerm} onchange={handleLoanTermChange}></lightning-input>
+            <p>Monthly Payment: {formattedMonthlyPayment}</p>
+            <button class="slds-button slds-button_brand" onclick={shareWithAgent}>Share with RS Assistant</button>
+        </div>
+
+        <!-- Chat with RS Assistant -->
+        <div class="chat-section">
+            <lightning-button label="Chat with RS Assistant" variant="brand" onclick={openChatModal}></lightning-button>
+        </div>
+
+        <!-- Service Information Modal -->
+        <template if:true={showModal}>
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={closeModal}>
+                            <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                        </button>
+                        <h2 id="modal-heading-01" class="slds-modal__title">{modalTitle}</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <p>{modalContent}</p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={closeModal}>Close</button>
+                    </footer>
+                </div>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </section>
+        </template>
+
+        <!-- Chat Modal -->
+        <template if:true={showChatModal}>
+            <section role="dialog" tabindex="-1" aria-labelledby="chat-modal-heading" aria-modal="true" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={closeChatModal}>
+                            <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                        </button>
+                        <h2 id="chat-modal-heading" class="slds-modal__title">Chat with RS Assistant</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning-textarea name="chatQuery" value={chatQuery} label="Your Question" onchange={handleChatQueryChange}></lightning-textarea>
+                        <button class="slds-button slds-button_brand slds-m-top_medium" onclick={sendToAgent}>Send</button>
+                        <div if:true={agentResponse} class="slds-m-top_medium slds-box">
+                            <p><strong>Response:</strong> {agentResponse}</p>
+                        </div>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <button class="slds-button slds-button_neutral" onclick={closeChatModal}>Close</button>
+                    </footer>
+                </div>
+                <div class="slds-backdrop slds-backdrop_open"></div>
+            </section>
+        </template>
+    </lightning-card>
+</template>
