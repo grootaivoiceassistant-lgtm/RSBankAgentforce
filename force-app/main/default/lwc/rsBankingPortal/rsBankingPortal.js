@@ -3,6 +3,8 @@ import userId from '@salesforce/user/Id';
 import { getRecord } from 'lightning/uiRecordApi';
 import NAME_FIELD from '@salesforce/schema/User.Name';
 import getUserBankingDetails from '@salesforce/apex/UserBankingDetailsController.getUserBankingDetails';
+import { refreshApex } from '@salesforce/apex';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 export default class RsBankingDashboard extends LightningElement {
     // Public property (configurable in App Builder)
@@ -11,6 +13,8 @@ export default class RsBankingDashboard extends LightningElement {
     // Logged in user details
     @track loggedInUserId = userId;
     @track loggedInUserName;
+
+    wiredBankingResult;
 
     // Wire adapter to fetch User record
     @wire(getRecord, { recordId: '$loggedInUserId', fields: [NAME_FIELD] })
@@ -90,22 +94,31 @@ export default class RsBankingDashboard extends LightningElement {
 
     @track showBranchModal = false;
 
-    // Wire to fetch banking details
     @wire(getUserBankingDetails, { userId: '$loggedInUserId' })
-    wiredBankingDetails({ error, data }) {
+    wiredBankingDetails(result) {
+
+        this.wiredBankingResult = result;
+
+        const { data, error } = result;
+
         if (data) {
+
             this.bankAccounts = data.bankAccounts || [];
             this.transactions = data.transactions || [];
             this.loans = data.loans || [];
             this.cards = data.cards || [];
-            console.log('Banking Details:', { bankAccounts: this.bankAccounts, transactions: this.transactions, loans: this.loans, cards: this.cards });
+
         } else if (error) {
-            console.error('Error fetching banking details:', error);
+
+            console.error(error);
+
             this.bankAccounts = [];
             this.transactions = [];
             this.loans = [];
             this.cards = [];
+
         }
+
     }
 
     // Lifecycle
@@ -180,11 +193,36 @@ export default class RsBankingDashboard extends LightningElement {
         (Logged in User: ${this.loggedInUserName || 'Loading...'})`;
         this.showModal = true;
     }
+    get currentAccountNumber() {
+        return this.bankAccounts?.length
+            ? this.bankAccounts[0].accountNumber
+            : '';
+    }
+
+    showTransferPopup = false;
 
     handleTransferFunds() {
-        this.modalTitle = 'Transfer Funds';
-        this.modalContent = 'Transfer Funds feature coming soon!';
-        this.showModal = true;
+        this.showTransferPopup = true;
+    }
+
+    handleTransferClose() {
+        this.showTransferPopup = false;
+    }
+
+    async handleTransferSuccess() {
+
+        this.showTransferPopup = false;
+
+        await refreshApex(this.wiredBankingResult);
+
+        this.dispatchEvent(
+            new ShowToastEvent({
+                title: 'Success',
+                message: 'Funds transferred successfully.',
+                variant: 'success'
+            })
+        );
+
     }
 
     handlePayBills() {

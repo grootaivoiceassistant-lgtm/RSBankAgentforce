@@ -462,5 +462,14 @@
                 <div class="slds-backdrop slds-backdrop_open"></div>
             </section>
         </template>
+
     </lightning-card>
+     <!-- Transfer Funds Component -->
+    <template if:true={showTransferPopup}>
+    <c-rs-transfer-funds
+        account-number={currentAccountNumber}
+        onclose={handleTransferClose}
+        onsuccess={handleTransferSuccess}>
+    </c-rs-transfer-funds>
+</template>
 </template>

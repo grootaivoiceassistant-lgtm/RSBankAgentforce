@@ -1,0 +1,92 @@
+<template>
+
+    <section
+        role="dialog"
+        tabindex="-1"
+        aria-modal="true"
+        class="slds-modal slds-fade-in-open">
+
+        <div class="slds-modal__container">
+
+            <!-- HEADER -->
+
+            <header class="slds-modal__header">
+
+                <lightning-button-icon
+                    icon-name="utility:close"
+                    alternative-text="Close"
+                    onclick={handleClose}
+                    class="slds-modal__close">
+                </lightning-button-icon>
+
+                <h2 class="slds-text-heading_medium">
+                    Transfer Funds
+                </h2>
+
+            </header>
+
+            <!-- BODY -->
+
+            <div class="slds-modal__content slds-p-around_medium">
+
+                <template if:true={isLoading}>
+                    <lightning-spinner
+                        alternative-text="Please wait"
+                        size="medium">
+                    </lightning-spinner>
+                </template>
+
+                <lightning-input
+                    label="From Account"
+                    value={accountNumber}
+                    disabled>
+                </lightning-input>
+
+                <lightning-input
+                    label="To Account Number"
+                    value={toAccountNumber}
+                    onchange={handleToAccountChange}
+                    required>
+                </lightning-input>
+
+                <lightning-input
+                    type="number"
+                    label="Amount"
+                    value={amount}
+                    onchange={handleAmountChange}
+                    required>
+                </lightning-input>
+
+                <lightning-textarea
+                    label="Description"
+                    value={description}
+                    onchange={handleDescriptionChange}>
+                </lightning-textarea>
+
+            </div>
+
+            <!-- FOOTER -->
+
+            <footer class="slds-modal__footer">
+
+                <lightning-button
+                    label="Cancel"
+                    onclick={handleClose}>
+                </lightning-button>
+
+                <lightning-button
+                    variant="brand"
+                    label="Transfer"
+                    onclick={handleTransfer}
+                    disabled={isLoading}>
+                </lightning-button>
+
+            </footer>
+
+        </div>
+
+    </section>
+
+    <div class="slds-backdrop slds-backdrop_open"></div>
+
+</template>
